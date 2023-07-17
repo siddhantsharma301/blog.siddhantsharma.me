@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="sid sharma's blog" />
+
+  <title>Introducing Weld</title>
+
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora&family=Space+Mono&display=swap" rel="stylesheet">
+ </head>
+
+ <body>
+  <div id="preamble">
+   <a href="./weld.html"><h1 class="title">Introducing Weld</h1></a>
+   <div class="authors">
+    Sid Sharma, Maanav Khaitan
+   </div>
+   <hr>
+  </div>
+
+  <p>
+    Weld is a <b>proof-of-concept testnet framework</b> integrating Narwhal/Bullshark's 
+    high-throughput consensus with EVM execution powered by Foundry's Anvil.
+  </p>
+  <p>
+    We've built on 
+    <a href="https://www.paradigm.xyz/2022/07/experiment-narwhal-bullshark-cosmos-stack">
+      previous work from Paradigm
+    </a>
+     to run a simple ABCI app consisting of EVM execution on top of 
+    Narwhal/Bullshark, but by integrating with Anvil, we have added support for <b>Ethereum's  
+    JSON-RPC APIs</b>.
+  </p>
+
+  <h2>Components</h2>
+  <div>
+    <ol>
+      <li>Client-facing RPC shim sends new transactions to N/B for ordering</li>
+      <li>Reliable stream of hashes of batches of transactions from Bullshark</li>
+      <li>Reconstruction of the ledger by querying Narwhal workers' stores for the confirmed batches of transactions</li>
+      <li>Shim delivers the reconstructed ledger to Anvil</li>
+    </ol>
+  </div>
+  <img src="https://www.paradigm.xyz/static/experiment-narwhal-bullshark-cosmos-stack/anvil-node.png" class="image-box"/>
+  <center>(image credit: Paradigm)</center>
+  <br>
+
+  <h2>Why Narwhal/Bullshark?</h2>
+  <p>
+    Narwhal/Bullshark are a part of a class of DAG-based BFT protocols that emphasize high 
+    throughput for proof-of-stake blockchains. It is fundamentally different than existing 
+    algorithms such as Gasper (Ethereum 2.0) and Tendermint, giving users more performant and 
+    customizable testnets. By using Foundry's Anvil, we allow users to pick their <i>own</i> consensus 
+    algorithms, giving them control over the consensus <i>and</i> execution layer. If users want to 
+    use N/B with a different execution environment, they can interface with the RPC that the 
+    consensus layer exposes.
+  </p>
+
+  <h2>How did we integrate N/B with Anvil?</h2>
+  <p>
+    We had to find a way to imitate ABCI's <code>BeginBlock</code>, <code>DeliverTx</code>, 
+    <code>EndBlock</code>, and <code>Commit</code> hooks using a RPC server instead. 
+    We did this by using Anvil's <code>--no-mining</code> mode, delivering transactions from each 
+    batch to Anvil and then manually forcing Anvil to mine a block once the entire batch has been delivered.
+  </p>
+
+  <h2>Demo</h2>
+  <p>
+    Setup and dependencies:
+  </p>
+  <div>
+    <ol>
+      <li><a href="https://www.rust-lang.org/">Rust</a></li>
+      <li><a href="https://python-poetry.org/">Python Poetry</a></li>
+      <li><a href="https://github.com/tmux/tmux">Tmux</a></li>
+      <li>From project root, <code>cd demo && poetry install</code></li>
+    </ol>
+  </div>
+  <p>
+    To run the demo, from the project root:
+  </p>
+  <div>
+    <ol>
+      <li>1st terminal: <code>cd demo && cargo build && poetry run fab local</code></li>
+      <li>2nd terminal (after the testbed has started in 1st terminal): <code>cargo run --bin client</code></li>
+    </ol>
+  </div>
+  <p>
+    The second command will produce output like this:
+  </p>
+  <img src="https://i.imgur.com/iNoymdG.gif" class="image-box"/>
+  <p>
+    The demo consensus network is run by four nodes (each running on <code>localhost</code>), whose 
+    RPC endpoints are reachable on TCP ports 3002, 3009, 3016, and 3023, respectively. There are 
+    three accounts, <code>0xf39f</code> (initially 1.5 ETH), <code>0x7099</code> (initially 100 ETH), 
+    and <code>0x3c44</code> (initially 100 ETH). <code>0xf39f</code> performs a double spend, 
+    sending 1 ETH each to <code>0x7099</code> and <code>0x3c44</code> in two different transactions 
+    that get input to the nodes at ports 3009 and 3016, respectively. Note that only one transaction 
+    can make it. Eventually, nodes reach consensus on which transaction gets executed in Anvil, and 
+    the application state is updated in lockstep across all nodes. The update is reflected in 
+    subsequent balance queries.
+  </p>
+
+  <h2>Future Work</h2>
+  <div>
+    <ul>
+      <li>Implementing benchmarks for metrics like TPS, identifying bottlenecks between consensus and execution, etc.</li>
+      <li>Migrating from <code>ethers-rs</code> to <a href="https://github.com/alloy-rs/core"><code>Alloy</code></a></li>
+    </ul>
+  </div>
+
+  <h2>Acknowledgments</h2>
+  <p>We want to thank Georgios K., Andrew K., Joachim N., and the Foundry team for their initial work.</p>
+
+  <footer>
+    <hr>
+    <div class="footer">
+      <span style="float: left">
+        <a href="../../index.html">home</a>
+      </span>
+      sid's ramblings
+    </div>
+  </footer>
+
+ </body>
+</html>
