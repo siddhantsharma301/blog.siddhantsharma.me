@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="sid sharma's blog" />
+
+    <title>Understanding Gasper</title>
+
+    <link rel="stylesheet" href="../../styles.css" />
+    <link rel="stylesheet" href="../../prism.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora&family=Space+Mono&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.17.1/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.17.1/components/prism-python.min.js"></script>
+
+    <div id="preamble">
+        <a href="gasper.html">
+            <h1 class="title">Understanding Gasper</h1>
+        </a>
+        <div class="authors">
+            Sid Sharma
+            <span style="float: right;">
+                [2023-07-17]
+            </span>
+        </div>
+        <hr>
+    </div>
+    <p>
+        This is a part of research for an ongoing project, so this is more of
+        a braindump. Read the original Gasper paper <a href="https://arxiv.org/pdf/2003.03052.pdf">here</a>.
+        <br>
+        <b>&#9888; NOTE: This is a WIP &#9888;</b>
+    </p>
+
+    <hr style="border-top: 1px dotted">
+    <h2>Table of Contents</h2>
+    <ul>
+        <li><a href="#table-of-contents">Table of Contents</a></li>
+        <li><a href="#overview">Overview</a></li>
+        <li><a href="#goals">Goals</a></li>
+        <li><a href="#groundwork-and-model">Groundwork and Model</a></li>
+        <li><a href="#lmd-ghost----v0">LMD GHOST – v0</a></li>
+        <li><a href="#detour-committees-and-block-production">Detour: Committees
+                and Block Production</a></li>
+        <li><a href="#prototype-hybrid-lmd-ghost----v0999">Prototype Hybrid LMD
+                GHOST – v0.999…</a></li>
+        <li><a href="#hybrid-lmd-ghost----v1">Hybrid LMD GHOST – v1</a></li>
+    </ul>
+    <hr style="border-top: 1px dotted">
+
+    <h2>Overview</h2>
+    <p>Gasper is the consensus protocol used by Ethereum. It’s composed of 2
+        gadgets:
+    <ol>
+        <li>LMD GHOST: fork-choice rule for block production</li>
+        <li>Casper: finality gadget for finalizing blocks</li>
+    </ol>
+    <p>Validators have 2 jobs: propose blocks and make attestations</p>
+    <h2>Goals</h2>
+    <ul>
+        <li>Resilient to very dynamic validator sets
+            <ul>
+                <li>Kind of tricky<br />
+                </li>
+            </ul>
+        </li>
+        <li>Byzantine fault tolerant (of course)<br />
+        </li>
+        <li>Liveness favoring: chain should keep producing blocks even if not
+            all blocks are finalized
+            <ul>
+                <li>Formalized through plausible and probable finality<br />
+                </li>
+            </ul>
+        </li>
+        <li>Safety: finalized chain contains no conflicting blocks for given
+            view</li>
+        Seems contradictory, right?
+        <li>Provides 2 ledgers: give clients choice of availability vs finality
+            ⇒ chain resilience
+            <ul>
+                <li>Dynamic availability ledger: longest chain
+                    <ul>
+                        <li>Always live, safe unless network partition</li>
+                    </ul>
+                </li>
+                <li>Finalized prefix ledger of dynamic availability ledger: finalized
+                    chain
+                    <ul>
+                        <li>Always safe, live unless low participation</li>
+                    </ul>
+                </li>
+            </ul>
+            <img src="./assets/ledgers.png" class="image-box"
+                alt="Longest chain vs BFT ledgers under network partition">
+            <p class="image-caption">The dynamic availability vs. finality-favoring ledgers under network partition.
+                Source: <a href="https://www.youtube.com/watch?v=2nFMfN8aaIA">Ebb-and-Flow Protocols: A Resolution of
+                    the Availability-Finality Dilemma</a></p>
+        </li>
+    </ul>
+    <h2>Groundwork and Model</h2>
+    <ul>
+        <li>Assume partial synchrony</li>
+        <li>Fork-choice rule = given view <code>V</code>, return single leaf
+            block <code>B</code> to propose
+            <ul>
+                <li>Forms chain from genesis to <code>B</code></li>
+                <li>Helps validator deterministically produce unique chain</li>
+            </ul>
+        </li>
+        <li>Finality = set of blocks that all validators accept as a part of
+            chain history
+            <ul>
+                <li>Also deterministic</li>
+                <li>Use attestations/votes to determine longest chain, finality, and
+                    slashable offenses</li>
+            </ul>
+        </li>
+        <li>Slot = constant number of seconds containing a block
+            <ul>
+                <li>12 seconds per slot in production</li>
+                <li>Each slot has committee attesting to their view of head of the chain
+                    <ul>
+                        <li>1 proposer, and all members of committee attest</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+        <li>Epoch = <code>C</code> slots, used to checkpoint for finality
+            (Casper!)
+            <ul>
+                <li><code>C=64</code> in production</li>
+            </ul>
+        </li>
+        <li>Epoch-boundary pairs = 1 block/epoch is the checkpoint block for
+            Casper
+            <ul>
+                <li>A block can be a checkpoint more than once</li>
+                <li>Noted as <code>(B, i)</code> and <code>(B, j)</code> for different
+                    epochs <code>i</code> and <code>j</code></li>
+            </ul>
+        </li>
+        <li>Epoch boundary block = for block <code>B</code> and epoch
+            <code>j</code>, define <code>EBB(B, j)</code> as function that gets
+            block in highest slot by epoch <code>j</code> in <code>chain(B)</code>
+            <ul>
+                <li>AKA gets latest justified block by epoch <code>j</code> in
+                    <code>chain(B)</code>
+                </li>
+                <li>Let <code>LEBB(B) = max([EBB(B, j) for j in epochs])</code> (latest
+                    EBB in <code>chain(B)</code>)</li>
+                <li>Some nice EBB properties:
+                    <ul>
+                        <li>For all <code>B</code>, <code>EBB(B, 0) = genesis()</code></li>
+                        <li>If <code>slot(B) = jC</code> for some <code>j</code>, <code>B</code>
+                            is EBB in all chains that include <code>B</code>
+                            <ul>
+                                <li>AKA if block <code>B</code> is last block in epoch <code>j</code>,
+                                    it’s EBB for all chains that include <code>B</code></li>
+                                <li>It is possible for <code>B</code> to be EBB for blocks in different
+                                    epochs → why we have <code>(B, j)</code> notation</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <img src="./assets/ebb.png" class="image-box">
+                <p class="image-caption">Epoch boundary blocks under forks, showing how epoch boundary pairs can be
+                    across epochs. Source: <a href="https://arxiv.org/pdf/2003.03052.pdf">Gasper</a>
+                </p>
+            </ul>
+        </li>
+    </ul>
+    <h2>LMD GHOST – v0</h2>
+    <ul>
+        <li>LMD = last message driven</li>
+        <li>GHOST = greediest heaviest observed subtree</li>
+        <li>LMD GHOST greedily pick blocks with most activity for next block
+            production
+            <ul>
+                <li>Activity == weight == # of attestations</li>
+            </ul>
+            <pre><code class="language-python">def lmdGhost(G: view) -&gt; block:
+    B = genesis()                       # genesis block
+    M = latestAttestations()            # one attestation per validator
+    while B not in G.leaves:
+        B = argmax([weight(G, child, M) for child in B.children])
+    return B</code></pre>
+        </li>
+    </ul>
+    <div class="two-col-row">
+        <div class="two-col-column">
+            <img src="./assets/lmd-ghost.png" class="image-box" alt="LMD GHOST tree example">
+            <p class="image-caption">An example of LMD GHOST tree. Source: <a
+                    href="https://arxiv.org/pdf/2003.03052.pdf">Gasper</a></p>
+        </div>
+        <div class="two-col-column" style="vertical-align: middle">
+            <ul>
+                <li>Heaviest leaf is 3 ⇒ propose 3 as new block</li>
+                <li>Assume heaviest subtree is the right one</li>
+                <li>No impl. details of blocks and attestations</li>
+            </ul>
+        </div>
+    </div>
+
+    <h2>Detour: Committees and Block Production</h2>
+    <ul>
+        <li>Committees picked to propose a block at each slot
+            <ul>
+                <li>Slot is <code>i = jC+k</code></li>
+                <li>Proposer <code>P</code> picked randomly for each slot and does runs
+                    <code>HLMD(view(P, i)) = B’</code> to propose <code>B’</code>
+                </li>
+                <li><code>B’</code> has <code>slot(B) = i</code>,
+                    <code>B’.parent = B</code>, <code>newattests(B)</code>, and other
+                    metadata
+                    <ul>
+                        <li><code>newattests(B)</code> is all attestations for <code>B</code>
+                            and not included in <code>newattests(B*)</code> for ancestor
+                            <code>B*</code> of <code>B</code>
+                        </li>
+                        <li>Metadata irrelevant for consensus (impl. specific)</li>
+                        <li>If block <code>B</code> seen but parents not,
+                            <code>newattests(B)</code> ignored
+                        </li>
+                    </ul>
+                </li>
+                <li>At time <code>(i + ½)</code>, validator <code>V</code> finds
+                    <code>B’ = HLMD(view(V, i+½))</code> and make attestation <code>a</code>
+                    <ul>
+                        <li><code>slot(a) = jC + k</code></li>
+                        <li><code>block(a) = B’</code> ⇒ <code>a</code> attests to
+                            <code>block(a)</code>
+                        </li>
+                        <li><code>slot(block(a)) ≤ slot(a)</code></li>
+                        <li>Checkpoint edge = “FFG vote” between two epoch boundary pairs</li>
+                    </ul>
+                </li>
+            </ul>
+            <img src="./assets/checkpoint-supermajority-links.png" class="image-box">
+            <p class="image-caption">Different checkpoint edges and supermajority links. Source: <a
+                    href="https://arxiv.org/pdf/2003.03052.pdf">Gasper</a></p>
+        </li>
+        <li>Supermajority link = if &gt;⅔ of total validator stake in
+            attestations linking <code>(A, j’) → (B, j)</code> (via checkpoint
+            edge)</li>
+        <li>Justified pairs = for a view <code>G</code>, a justified pair is
+            <ul>
+                <li><code>J(·)</code> = justified pairs for view</li>
+                <li>If <code>(A, j’)</code> in <code>J(G)</code> and checkpoint edge
+                    from <code>(A, j’) → (B, j)</code> ⇒ <code>(B, j)</code> in
+                    <code>J(G)</code>
+                </li>
+                <li><code>(B_gen, 0)</code> in <code>J(G)</code></li>
+            </ul>
+        </li>
+    </ul>
+    <h2>Prototype Hybrid LMD GHOST –
+        v0.999…</h2>
+    <pre><code class="language-python">def protoHLMD(G: view) -&gt; block:
+    (B_j, j) = getHighestEpochJustifiedPair(G)
+    B = B_j
+    M = latestAttestations()
+    while B not in G.leaves:
+        B = argmax([weight(G, child, M) for child in B.children])
+    return B</code></pre>
+    <h2>Hybrid LMD GHOST – v1</h2>
+    <pre><code class="language-python">def HLMD(G: view) -&gt; block:
+    (B_j, j) = max([J(l) for l in G.leaves]) # only leaves
+    B’ = [(B_j, j) in J(l) for l in G.leaves]
+    B = B_j, G’ = union([chain(b) for b in B’]) 
+    M = latestAttestations()
+    while B not in G’.leaves:
+        B = argmax([weight(G’, child, M) for child in B.children])
+    return B</code></pre>
+    <ul>
+        <li>Each leaf <code>B_l</code> stores state of its last justified
+            pair</li>
+        <li>During epoch, new attestations to blocks → update GHOST attestations
+            <code>M</code> but NOT Casper attestations (frozen!)
+            <ul>
+                <li>Prevent mixing of the two with hybrid approach</li>
+            </ul>
+        </li>
+    </ul>
+
+
+    <footer>
+        <hr>
+        <div class="footer">
+            <span style="float: left">
+                <a href="/index.html">home</a>
+            </span>
+            sid's ramblings
+        </div>
+    </footer>
+
+</body>
+
+</html>

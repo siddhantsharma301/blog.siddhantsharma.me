@@ -2,7 +2,7 @@
     text-align: center;
     margin-bottom: 0.2em;
 }
-  
+
 .subtitle {
     text-align: center;
     font-size: medium;
@@ -48,6 +48,7 @@ code,
     background-color: rgba(0, 0, 0, 0.04);
     border-radius: 3px;
 }
+
 .subtitle {
     text-align: center;
     font-size: medium;
@@ -79,9 +80,24 @@ code,
     text-align: right;
 }
 
-.tree, li {
+.tree {
     list-style-type: "├─";
-    .last {
+
+    .tree-last {
         list-style-type: "└─";
     }
+}
+
+.two-col-row {
+    display: flex;
+    max-width: 100%;
+}
+
+.two-col-column {
+    flex: 50%;
+}
+
+.image-caption {
+    color: rgb(109, 109, 109);
+    font-size: 85%;
 }
