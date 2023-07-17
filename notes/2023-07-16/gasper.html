@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="sid sharma's blog" />
+
+    <title>Understanding Gasper</title>
+
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora&family=Space+Mono&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div id="preamble">
+        <a href="./weld.html">
+            <h1 class="title">Understanding Gasper</h1>
+        </a>
+        <div class="authors">
+            Sid Sharma
+        </div>
+        <hr>
+    </div>
+    <p>
+        This is a part of research for an ongoing project, so this is more of
+        a braindump. Read the original Gasper paper <a href="https://arxiv.org/pdf/2003.03052.pdf">here</a>.
+    </p>
+
+    <h2>Overview</h2>
+    <p>Gasper is the consensus protocol used by Ethereum. It’s composed of 2
+        gadgets:
+        <ol>
+            <li>LMD GHOST: fork-choice rule for block production<</li>
+            <li>Casper: finality gadget for finalizing blocks</li>
+        </ol>
+    <p>Validators have 2 jobs: propose blocks and make attestations</p>
+    <h2>Goals</h2>
+    <ul>
+        <li>Resilient to very dynamic validator sets
+            <ul>
+                <li>Kind of tricky<br />
+                </li>
+            </ul>
+        </li>
+        <li>Byzantine fault tolerant (of course)<br />
+        </li>
+        <li>Liveness favoring: chain should keep producing blocks even if not
+            all blocks are finalized
+            <ul>
+                <li>Formalized through plausible and probable finality<br />
+                </li>
+            </ul>
+        </li>
+        <li>Safety: finalized chain contains no conflicting blocks for given
+            view<br />
+            Seems contradictory, right?</li>
+        <li>Provides 2 ledgers: give clients choice of availability vs finality
+            ⇒ chain resilience
+            <ul>
+                <li>Dynamic availability ledger: longest chain
+                    <ul>
+                        <li>Always live, safe unless network partition</li>
+                    </ul>
+                </li>
+                <li>Finalized prefix ledger of dynamic availability ledger: finalized
+                    chain
+                    <ul>
+                        <li>Always safe, live unless low participation</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ul>
+    <h2>Groundwork and Model</h2>
+    <ul>
+        <li>Assume partial synchrony</li>
+        <li>Fork-choice rule = given view <code>V</code>, return single leaf
+            block <code>B</code> to propose
+            <ul>
+                <li>Forms chain from genesis to <code>B</code></li>
+                <li>Helps validator deterministically produce unique chain</li>
+            </ul>
+        </li>
+        <li>Finality = set of blocks that all validators accept as a part of
+            chain history
+            <ul>
+                <li>Also deterministic</li>
+                <li>Use attestations/votes to determine longest chain, finality, and
+                    slashable offenses</li>
+            </ul>
+        </li>
+        <li>Slot = constant number of seconds containing a block
+            <ul>
+                <li>12 seconds per slot in production</li>
+                <li>Each slot has committee attesting to their view of head of the chain
+                    <ul>
+                        <li>1 proposer, and all members of committee attest</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+        <li>Epoch = <code>C</code> slots, used to checkpoint for finality
+            (Casper!)
+            <ul>
+                <li><code>C=64</code> in production</li>
+            </ul>
+        </li>
+        <li>Epoch-boundary pairs = 1 block/epoch is the checkpoint block for
+            Casper
+            <ul>
+                <li>A block can be a checkpoint ≥1 time</li>
+                <li>Noted as <code>(B, i)</code> and <code>(B, j)</code> for different
+                    epochs <code>i</code> and <code>j</code></li>
+            </ul>
+        </li>
+        <li>Epoch boundary block = for block <code>B</code> and epoch
+            <code>j</code>, define <code>EBB(B, j)</code> as function that gets
+            block in highest slot by epoch <code>j</code> in <code>chain(B)</code>
+            <ul>
+                <li>AKA gets latest justified block by epoch <code>j</code> in
+                    <code>chain(B)</code>
+                </li>
+                <li>Let <code>LEBB(B) = max([EBB(B, j) for j in epochs])</code> (latest
+                    EBB in <code>chain(B)</code>)</li>
+            </ul>
+        </li>
+    </ul>
+
+
+    <footer>
+        <hr>
+        <div class="footer">
+            <span style="float: left">
+                <a href="../../index.html">home</a>
+            </span>
+            sid's ramblings
+        </div>
+    </footer>
+
+</body>
+
+</html>
