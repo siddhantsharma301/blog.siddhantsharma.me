@@ -39,7 +39,7 @@
     </p>
 
     <hr style="border-top: 1px dotted">
-    <h2>Table of Contents</h2>
+    <h2 id="table-of-contents">Table of Contents</h2>
     <ul>
         <li><a href="#table-of-contents">Table of Contents</a></li>
         <li><a href="#overview">Overview</a></li>
@@ -54,7 +54,7 @@
     </ul>
     <hr style="border-top: 1px dotted">
 
-    <h2>Overview</h2>
+    <h2 id="overview">Overview</h2>
     <p>Gasper is the consensus protocol used by Ethereum. It’s composed of 2
         gadgets:
     <ol>
@@ -62,7 +62,7 @@
         <li>Casper: finality gadget for finalizing blocks</li>
     </ol>
     <p>Validators have 2 jobs: propose blocks and make attestations</p>
-    <h2>Goals</h2>
+    <h2 id="goals">Goals</h2>
     <ul>
         <li>Resilient to very dynamic validator sets
             <ul>
@@ -104,7 +104,7 @@
                     the Availability-Finality Dilemma</a></p>
         </li>
     </ul>
-    <h2>Groundwork and Model</h2>
+    <h2 id="groundwork-and-model">Groundwork and Model</h2>
     <ul>
         <li>Assume partial synchrony</li>
         <li>Fork-choice rule = given view <code>V</code>, return single leaf
@@ -176,7 +176,7 @@
             </ul>
         </li>
     </ul>
-    <h2>LMD GHOST – v0</h2>
+    <h2 id="lmd-ghost----v0">LMD GHOST – v0</h2>
     <ul>
         <li>LMD = last message driven</li>
         <li>GHOST = greediest heaviest observed subtree</li>
@@ -208,7 +208,7 @@
         </div>
     </div>
 
-    <h2>Detour: Committees and Block Production</h2>
+    <h2 id="detour-committees-and-block-production">Detour: Committees and Block Production</h2>
     <ul>
         <li>Committees picked to propose a block at each slot
             <ul>
@@ -260,7 +260,7 @@
             </ul>
         </li>
     </ul>
-    <h2>Prototype Hybrid LMD GHOST –
+    <h2 id="prototype-hybrid-lmd-ghost----v0999">Prototype Hybrid LMD GHOST –
         v0.999…</h2>
     <pre><code class="language-python">def protoHLMD(G: view) -&gt; block:
     (B_j, j) = getHighestEpochJustifiedPair(G)
@@ -269,7 +269,7 @@
     while B not in G.leaves:
         B = argmax([weight(G, child, M) for child in B.children])
     return B</code></pre>
-    <h2>Hybrid LMD GHOST – v1</h2>
+    <h2 id="hybrid-lmd-ghost----v1">Hybrid LMD GHOST – v1</h2>
     <pre><code class="language-python">def HLMD(G: view) -&gt; block:
     (B_j, j) = max([J(l) for l in G.leaves]) # only leaves
     B’ = [(B_j, j) in J(l) for l in G.leaves]
