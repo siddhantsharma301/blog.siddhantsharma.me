@@ -1,42 +1,42 @@
 .title {
     text-align: center;
     margin-bottom: 0.2em;
-  }
+}
   
-  .subtitle {
+.subtitle {
     text-align: center;
     font-size: medium;
     font-weight: bold;
     margin-top: 0;
-  }
-  
-  body {
+}
+
+body {
     font-family: "Lora", serif;
     line-height: 1.6;
     font-size: 18px;
     padding: 0 10px;
     margin: 60px auto;
     max-width: 700px;
-  }
-  
-  h2,
-  h2,
-  h3 {
+}
+
+h2,
+h2,
+h3 {
     line-height: 1.2;
-  }
-  
-  h2 {
+}
+
+h2 {
     font-style: italic;
     font-size: 18px;
-  }
-  
-  a:link,
-  a:visited {
+}
+
+a:link,
+a:visited {
     color: rgb(21, 70, 175);
-  }
-  
-  code,
-  .code {
+}
+
+code,
+.code {
     font-family: "Space Mono", "Liberation Mono", Menlo, Courier, monospace;
     font-size: 1.125rem;
     line-height: 1.6;
@@ -47,16 +47,24 @@
     font-size: 85%;
     background-color: rgba(0, 0, 0, 0.04);
     border-radius: 3px;
-  }
-  .subtitle {
+}
+.subtitle {
     text-align: center;
     font-size: medium;
     font-weight: bold;
     margin-top: 0;
-  }
-  
-  ::selection {
-      background: rgb(29, 29, 33);
-      color: rgb(121, 160, 241);
-    }
-  
+}
+
+::selection {
+    background: rgb(29, 29, 33);
+    color: rgb(121, 160, 241);
+}
+
+.image-box {
+    width: 100%;
+}
+
+.authors {
+    color: rgb(109, 109, 109);
+    font-style: italic;
+}
