@@ -68,3 +68,9 @@ code,
     color: rgb(109, 109, 109);
     font-style: italic;
 }
+
+.footer {
+    color: rgb(109, 109, 109);
+    font-style: italic;
+    text-align: right;
+}
