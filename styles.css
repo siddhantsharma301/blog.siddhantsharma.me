@@ -79,7 +79,7 @@ code,
     text-align: right;
 }
 
-.tree, li {
+.tree {
     list-style-type: "├─";
     .last {
         list-style-type: "└─";
