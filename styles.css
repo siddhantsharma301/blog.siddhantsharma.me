@@ -81,7 +81,7 @@ code,
 
 .tree {
     list-style-type: "├─";
-    .last {
+    .tree-last {
         list-style-type: "└─";
     }
 }
