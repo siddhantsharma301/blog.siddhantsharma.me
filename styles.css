@@ -2,7 +2,7 @@
     text-align: center;
     margin-bottom: 0.2em;
 }
-  
+
 .subtitle {
     text-align: center;
     font-size: medium;
@@ -49,21 +49,6 @@ code,
     border-radius: 3px;
 }
 
-/* pre code {
-    font-family: "Space Mono", "Liberation Mono", Menlo, Courier, monospace;
-    font-size: 1.125rem;
-    line-height: 1.6;
-    padding: 0;
-    padding-top: 0;
-    padding-bottom: 0;
-    margin: 0;
-    font-size: 85%;
-    background-color: rgba(0, 0, 0, 0.04);
-    border-radius: 3px;
-    display: block;
-} */
-
-
 .subtitle {
     text-align: center;
     font-size: medium;
@@ -97,7 +82,22 @@ code,
 
 .tree {
     list-style-type: "├─";
+
     .tree-last {
         list-style-type: "└─";
     }
+}
+
+.two-col-row {
+    display: flex;
+    max-width: 100%;
+}
+
+.two-col-column {
+    flex: 50%;
+}
+
+.image-caption {
+    color: rgb(109, 109, 109);
+    font-size: 85%;
 }
