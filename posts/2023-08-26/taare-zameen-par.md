@@ -1,0 +1,7 @@
+I recently rewatched [Taare Zameen Par](https://en.wikipedia.org/wiki/Taare_Zameen_Par), a Bollywood movie about a child with dyslexia and other learning disabilities. The movie portrays the child's struggles trying to understand English: letters float around the screen, jumble amongst themselves, and even spawn into spiders. Interestingly, the Hindi alphabet wasn't visualized in the same way.  
+![Screen capture of the floating letters scene from Taare Zameen Par](../assets/floating-letters.png)
+
+Initially this made sense, since Hindi has a far larger alphabet and is phonetically closer to spoken language than English. But as I thought about it more, I wondered if the different properties of the language affected learning disabilities. Would a child with dyslexia have the same problems with Hindi as they would with English? Taking this one step further, what is the relationship between the learning media and different learning disabilities?
+
+For example, is dyslexia more or less prevalent in languages that don't use the Latin alphabet? Would mathematics be simpler to learn and understand if we used a different base or notation system? Would programming be easier to pick up if the semantics were closer to natural language, or even a different medium?
+
