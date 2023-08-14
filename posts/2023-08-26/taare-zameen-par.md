@@ -6,3 +6,5 @@ Initially this made sense, since Hindi has a far larger alphabet and is phonetic
 For example, is dyslexia more or less prevalent in languages that don't use the Latin alphabet? Would mathematics be simpler to learn and understand if we used a different base or notation system? Would programming be easier to pick up if the semantics were closer to natural language, or even a different medium?  
 
 I'm no expert in any of these fields, but I think it's a fun exercise to think about.
+
+Some low-hanging fruit is leveraging embeddings or LLMs to interpolate between representations of different media. For example, interpolating an English statement with a mathematical statement, or interpolating between natural language and a programming language. Training embeddings is fairly inexpensive (depending on the GPU, <$1 hour for 1 billion tokens), while LLMs are good at translating between different topics and pattern matching of "learned" things. Automating these flows with self-serve tools can lower the barrier for everyone to discover the best learning media for them.
