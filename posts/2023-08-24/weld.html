@@ -27,7 +27,7 @@
         <div class="authors">
             Sid Sharma, <a href="https://twitter.com/MaanavKhaitan" style="color:rgb(109, 109, 109)">Maanav Khaitan</a>
             <span style="float: right;">
-                [2023-08-19]
+                [2023-08-24]
             </span>
         </div>
         <hr>
@@ -50,6 +50,7 @@
                         N/B with Anvil?</a></li>
             </ol>
         </li>
+        <li><a href="#execution-and-consensus-layer-flexibility">Execution and Consensus Layer Flexibility</a></li>
         <li><a href="#demo">Demo</a></li>
         <li><a href="#future-work">Future Work</a></li>
         <li><a href="#acknowledgments">Acknowledgments</a></li>
@@ -62,24 +63,26 @@
         execution on top of Narwhal/Bullshark, but by integrating with Anvil, we
         have added support for <strong>Ethereum’s JSON-RPC APIs</strong>.</p>
     <h2 id="implementation">Implementation</h2>
-    <p>Components: 
-        <ol>
-            <li>Client-facing RPC shim sends new transactions to N/B
-                for ordering</li>
-            <li>Reliable stream of hashes of batches of transactions
-                from Bullshark</li>
-            <li>Reconstruction of the ledger by querying Narwhal
-                workers’ stores for the confirmed batches of transactions</li>
-            <li>Shim delivers the reconstructed ledger to Anvil</li>
-        </ol>
+    <p>Components:
+    <ol>
+        <li>Client-facing RPC shim sends new transactions to N/B
+            for ordering</li>
+        <li>Reliable stream of hashes of batches of transactions
+            from Bullshark</li>
+        <li>Reconstruction of the ledger by querying Narwhal
+            workers’ stores for the confirmed batches of transactions</li>
+        <li>Shim delivers the reconstructed ledger to Anvil</li>
+    </ol>
     </p>
     <p>The RPC shim redirects all other RPC calls (such as
         <code>eth_getBalance</code>, <code>eth_getTransactionCount</code>, etc.)
         to Anvil’s Ethereum JSON-RPC.
     </p>
     <img src="https://www.paradigm.xyz/static/experiment-narwhal-bullshark-cosmos-stack/anvil-node.png"
-            class="image-box" />
-        <center><p class="image-caption">Image source: Paradigm</p></center>
+        class="image-box" />
+    <center>
+        <p class="image-caption">Image source: Paradigm</p>
+    </center>
     <h3 id="why-narwhalbullshark">Why Narwhal/Bullshark?</h3>
     <p>Narwhall/Bullshark are a part of a class of DAG-based BFT protocols
         that emphasize high throughput for proof-of-stake blockchains. It is
@@ -99,6 +102,11 @@
         to Anvil and then manually forcing Anvil to mine a block once the entire
         batch has been delivered.
     </p>
+    <h2 id="execution-and-consensus-layer-flexibility">Execution and Consensus Layer Flexibility</h2>
+    <p>Using the RPC shim, we can easily swap out the execution layer with any VM implementations. We can also swap out
+        the consensus layer with any other consensus algorithm that exposes an RPC interface. This allows us to create a
+        testnet with any combination of execution and consensus layers. For example, we can use Tendermint with Anvil or
+        we can use Solana VM with N/B.</p>
     <h2 id="demo">Demo</h2>
     <p>Setup/dependencies (from the main folder of the repository):
     <ul>
@@ -120,7 +128,9 @@
     </p>
     <p>The second command will produce output like this:
         <img src="https://i.imgur.com/iNoymdG.gif" class="image-box" />
-        <center><p class="image-caption">Video demo of Weld</p></center>
+        <center>
+            <p class="image-caption">Video demo of Weld</p>
+        </center>
     </p>
     <p>The demo consensus network is run by four nodes (each running on
         localhost), whose RPC endpoints are reachable on TCP ports 3002, 3009,
@@ -142,8 +152,11 @@
         <li>Migrating from <code>ethers-rs</code> to <a href="https://github.com/alloy-rs/core">Alloy</a></li>
     </ul>
     <h2 id="acknowledgments">Acknowledgments</h2>
-    <p>We want to thank Georgios K., Andrew K., Joachim N., and the Foundry
-        team for their initial work.</p>
+    <p>We want to thank <a href="https://twitter.com/gakonst">Georgios
+            K.</a>, <a href="https://twitter.com/a_kirillo">Andrew K.</a>, <a
+            href="https://twitter.com/jneu_net">Joachim
+            N.</a>, and the Foundry team
+        for their initial work.</p>
 
     <footer>
         <hr>

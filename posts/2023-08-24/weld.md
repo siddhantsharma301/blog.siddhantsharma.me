@@ -54,4 +54,4 @@ The demo consensus network is run by four nodes (each running on localhost), who
 * Migrating from `ethers-rs` to [Alloy](https://github.com/alloy-rs/core)
 
 ## Acknowledgments
-We want to thank Georgios K., Andrew K., Joachim N., and the Foundry team for their initial work.
+We want to thank [Georgios K.](https://twitter.com/gakonst), [Andrew K.](https://twitter.com/a_kirillo), [Joachim N.](https://twitter.com/jneu_net), and the Foundry team for their initial work.
