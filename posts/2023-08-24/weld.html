@@ -83,7 +83,7 @@
     <center>
         <p class="image-caption">Image source: Paradigm</p>
     </center>
-    <h3 id="why-narwhalbullshark">Why Narwhal/Bullshark?</h3>
+    <h2 id="why-narwhalbullshark">Why Narwhal/Bullshark?</h2>
     <p>Narwhall/Bullshark are a part of a class of DAG-based BFT protocols
         that emphasize high throughput for proof-of-stake blockchains. It is
         fundamentally different than existing algorithms such as Gasper
@@ -93,8 +93,8 @@
         consensus <em>and</em> execution layer. If users want to use N/B with a
         different execution environment, they can interface with the RPC that
         the consensus layer exposes.</p>
-    <h3 id="how-did-we-integrate-nb-with-anvil">How did we integrate N/B
-        with Anvil?</h3>
+    <h2 id="how-did-we-integrate-nb-with-anvil">How did we integrate N/B
+        with Anvil?</h2>
     <p>We had to find a way to imitate ABCI’s <code>BeginBlock</code>,
         <code>DeliverTx</code>, <code>EndBlock</code>, and <code>Commit</code>
         hooks using a RPC server instead. We did this by using Anvil’s
