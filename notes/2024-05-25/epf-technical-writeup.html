@@ -78,8 +78,8 @@
         this stake, we see this already reaches the 2 3 of network stake, so any additional stake voting for such a
         transition may have been finalized in another chain’s view. </p>
 
-    <p>In our pseudocode, Implementing this change requires changes to the core data structures and functionality of
-        Ethereum validators, discussed in section 4.3. We iterate over the history and past attestations in lockstep to
+    <p>In our pseudocode, implementing this change requires changes to the core data structures and functionality of
+        Ethereum validators. We iterate over the history and past attestations in lockstep to
         check whether there is conflicting history. We abstract this logic away in
         <code>existsConfictingVotes(FC, JC)</code>, where
         we get the local view of the block proposed at a slot. We use the set 𝐴 to index the attestations that specify
