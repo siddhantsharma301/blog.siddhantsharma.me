@@ -73,9 +73,9 @@
         the finalized checkpoint and the current justified checkpoint. We iterate through every slot to ensure there
         were no forks of the chain that may have been justified in a conflicting manner. If no conflicting blocks or
         forks could have been finalized, we are safe to commit! If we detect any conflicting stake used to attest
-        conflicting blocks, we must abort our commit. This is because up to 1 3 of network stake can be inactive or not
-        attest to a slot transition due to network asynchrony, and an additional 1 3 can be Byzantine stake. When we sum
-        this stake, we see this already reaches the 2 3 of network stake, so any additional stake voting for such a
+        conflicting blocks, we must abort our commit. This is because up to 1/3 of network stake can be inactive or not
+        attest to a slot transition due to network asynchrony, and an additional 1/3 can be Byzantine stake. When we sum
+        this stake, we see this already reaches the 2/3 of network stake, so any additional stake voting for such a
         transition may have been finalized in another chain’s view. </p>
 
     <p>In our pseudocode, implementing this change requires changes to the core data structures and functionality of
