@@ -83,7 +83,6 @@ TEMPLATE = f"""
 
 <body>
 {PREAMBLE}
-<hr style="border-top: 1px dotted">
 {SUMMARY if args.summary else ""}
 <hr style="border-top: 1px dotted">
 {BLOG_CONTENT}
