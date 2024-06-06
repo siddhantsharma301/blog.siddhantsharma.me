@@ -1,5 +1,6 @@
 import argparse
 import os
+import subprocess
 from datetime import datetime
 from html.parser import HTMLParser
 
@@ -11,7 +12,7 @@ def valid_date(s):
         raise argparse.ArgumentTypeError(f"Not a valid date: '{s}'. Expected format: YYYY-MM-DD")
 
 parser = argparse.ArgumentParser(description="Blogifying script")
-parser.add_argument("-f", "--file", type=str, help="Converted markdown -> html file to blogify")
+parser.add_argument("-f", "--file", type=str, help="Converted markdown to blogify")
 parser.add_argument("-a", "--authors", nargs="+", default=[], help="Blog authors")
 parser.add_argument("-d", "--date", type=valid_date, help="Blog date in YYYY-MM-DD format")
 parser.add_argument("-b", "--blog-title", type=str, help="Blog title")
@@ -19,6 +20,15 @@ parser.add_argument("-p", "--page-link", type=str, help="Page link for blog")
 parser.add_argument("-s", "--summary", type=str, help="Summary text for blog")
 args = parser.parse_args()
 args.authors = ", ".join(args.authors)
+
+def convert_md_to_html(input_file, output_file):
+    res = subprocess.run(['pandoc', input_file, '-o', output_file], capture_output=True, text=True)
+    if res.returncode != 0:
+        print(f"Conversion failed: {res.stderr}")
+        return None
+
+converted_file = os.path.join(os.path.dirname(args.file), f"converted.html") 
+convert_md_to_html(args.file, converted_file)
 
 HEAD_TEXT = f"""
 <head>
@@ -60,7 +70,7 @@ if args.summary:
     </p>
     """
 
-with open(args.file, 'r') as f:
+with open(converted_file, 'r') as f:
     BLOG_CONTENT = f.read()
 
 FOOTER = """
