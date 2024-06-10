@@ -30,8 +30,7 @@ def convert_md_to_html(input_file, output_file):
 converted_file = os.path.join(os.path.dirname(args.file), f"converted.html") 
 convert_md_to_html(args.file, converted_file)
 
-HEAD_TEXT = f"""
-<head>
+HEAD_TEXT = f"""<head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="sid sharma's blog" />
@@ -48,8 +47,7 @@ HEAD_TEXT = f"""
 </head>
 """
 
-PREAMBLE = f"""
-    <div id="preamble">
+PREAMBLE = f"""<div id="preamble">
         <a href="{args.page_link}.html">
             <h1 class="title">{args.blog_title}</h1>
         </a>
@@ -64,17 +62,15 @@ PREAMBLE = f"""
 """
 
 if args.summary:
-    SUMMARY = f"""
-    <p>
+    SUMMARY = f"""<p>
        {args.summary}
     </p>
-    """
+"""
 
 with open(converted_file, 'r') as f:
     BLOG_CONTENT = f.read()
 
-FOOTER = """
-    <footer>
+FOOTER = """<footer>
         <hr>
         <div class="footer">
             <span style="float: left">
@@ -85,12 +81,10 @@ FOOTER = """
     </footer>
 """
 
-TEMPLATE = f"""
-<!DOCTYPE html>
+TEMPLATE = f"""<!DOCTYPE html>
 <html lang="en">
 
 {HEAD_TEXT}
-
 <body>
 {PREAMBLE}
 {SUMMARY if args.summary else ""}
