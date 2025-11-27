@@ -5,7 +5,7 @@ Markdown to HTML blog converter with YAML frontmatter support.
 ## Usage
 
 ```bash
-python3 convert.py path/to/your/blog-post.md
+uv run python3 convert.py path/to/your/blog-post.md
 ```
 
 ## Features
