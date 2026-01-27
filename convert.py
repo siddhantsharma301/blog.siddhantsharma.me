@@ -297,11 +297,11 @@ def build_travel_page():
             if entry.get('coords'):
                 pins.append(generate_map_pin(entry))
 
-    # Load base map and inject pins
-    map_svg = load_and_populate_map(pins)
+    # Generate pins overlay SVG
+    pins_svg = generate_pins_svg(pins)
 
     # Generate the HTML page
-    html = generate_travel_html(map_svg, entries)
+    html = generate_travel_html(pins_svg, entries)
 
     output_file = travel_dir / "index.html"
     with open(output_file, 'w', encoding='utf-8') as f:
@@ -410,27 +410,15 @@ def generate_map_pin(entry):
     </a>'''
 
 
-def load_and_populate_map(pins):
-    """Load the base map SVG and insert pins."""
-    map_path = Path("travel/world-map.svg")
-
-    if not map_path.exists():
-        print("Warning: travel/world-map.svg not found, creating empty map")
-        return '<svg viewBox="0 0 1000 500" class="travel-map"></svg>'
-
-    with open(map_path, 'r', encoding='utf-8') as f:
-        svg_content = f.read()
-
-    # Replace the pins placeholder with actual pins
+def generate_pins_svg(pins):
+    """Generate an overlay SVG containing just the pins."""
     pins_content = '\n'.join(pins)
-    svg_content = svg_content.replace('<!-- PINS_PLACEHOLDER -->', pins_content)
-
-    # Remove the XML declaration and svg tags - we'll embed just the inner content
-    # but keep it as complete SVG for embedding
-    return svg_content
+    return f'''<svg class="map-pins" viewBox="0 0 2754 1398" preserveAspectRatio="xMidYMid meet">
+{pins_content}
+      </svg>'''
 
 
-def generate_travel_html(map_svg, entries):
+def generate_travel_html(pins_svg, entries):
     """Generate the complete travel lore HTML page."""
 
     # Build entries HTML
@@ -468,32 +456,40 @@ def generate_travel_html(map_svg, entries):
 
     <style>
       /* Travel-specific styles */
-      .travel-map {{
+      .map-container {{
+        position: relative;
         width: 100%;
         max-width: 700px;
         margin: 1.5em auto;
+      }}
+
+      .map-container img {{
+        width: 100%;
         display: block;
       }}
 
-      .travel-map .continents path {{
-        fill: none;
-        stroke: rgb(200, 200, 200);
-        stroke-width: 1;
+      .map-pins {{
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
       }}
 
-      .travel-map .map-pin {{
+      .map-pins a {{
+        pointer-events: auto;
+      }}
+
+      .map-pin {{
         fill: rgb(21, 70, 175);
         cursor: pointer;
         transition: all 0.2s ease;
       }}
 
-      .travel-map .map-pin:hover {{
+      .map-pin:hover {{
         fill: rgb(41, 90, 195);
         r: 9;
-      }}
-
-      .travel-map .pin-link {{
-        text-decoration: none;
       }}
 
       .travel-entry {{
@@ -553,7 +549,8 @@ def generate_travel_html(map_svg, entries):
     </div>
 
     <div class="map-container">
-      {map_svg}
+      <img src="world-map.svg" alt="World Map">
+      {pins_svg}
       <p class="map-attribution">map: <a href="https://commons.wikimedia.org/wiki/File:BlankMap-World.svg">Wikimedia Commons</a></p>
     </div>
 
