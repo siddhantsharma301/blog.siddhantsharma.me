@@ -341,11 +341,61 @@ def parse_travel_entry(md_file):
     }
 
 
-def coords_to_svg(lat, lon, width=1000, height=500):
-    """Convert lat/lon coordinates to SVG x/y position."""
-    # Simple equirectangular projection
-    x = (lon + 180) * (width / 360)
-    y = (90 - lat) * (height / 180)
+def coords_to_svg(lat, lon, width=2754, height=1398):
+    """Convert lat/lon to SVG x/y using Robinson projection."""
+
+    # Robinson projection lookup table (every 5° from 0° to 90°)
+    # Values are: (PLEN - parallel length, PDFE - distance from equator)
+    ROBINSON_TABLE = [
+        (1.0000, 0.0000),  # 0°
+        (0.9986, 0.0620),  # 5°
+        (0.9954, 0.1240),  # 10°
+        (0.9900, 0.1860),  # 15°
+        (0.9822, 0.2480),  # 20°
+        (0.9730, 0.3100),  # 25°
+        (0.9600, 0.3720),  # 30°
+        (0.9427, 0.4340),  # 35°
+        (0.9216, 0.4958),  # 40°
+        (0.8962, 0.5571),  # 45°
+        (0.8679, 0.6176),  # 50°
+        (0.8350, 0.6769),  # 55°
+        (0.7986, 0.7346),  # 60°
+        (0.7597, 0.7903),  # 65°
+        (0.7186, 0.8435),  # 70°
+        (0.6732, 0.8936),  # 75°
+        (0.6213, 0.9394),  # 80°
+        (0.5722, 0.9761),  # 85°
+        (0.5322, 1.0000),  # 90°
+    ]
+
+    # Interpolate values for the given latitude
+    abs_lat = abs(lat)
+    idx = int(abs_lat / 5)
+    idx = min(idx, len(ROBINSON_TABLE) - 2)
+
+    frac = (abs_lat - idx * 5) / 5
+    plen1, pdfe1 = ROBINSON_TABLE[idx]
+    plen2, pdfe2 = ROBINSON_TABLE[idx + 1]
+
+    plen = plen1 + (plen2 - plen1) * frac
+    pdfe = pdfe1 + (pdfe2 - pdfe1) * frac
+
+    if lat < 0:
+        pdfe = -pdfe
+
+    # Map center is at 0°, SVG center is width/2
+    # Robinson projection standard: central meridian at 0°
+    # Calibrated from SVG: Ghana (0° lon) is at x≈1276, not x=1377 (center)
+    # This ~101px offset means the map is centered around 11.5°E
+    central_meridian = 11.5
+
+    # Convert to SVG coordinates
+    # X: longitude scaled by parallel length
+    x = (width / 2) + (lon - central_meridian) * (width / 360) * plen
+
+    # Y: from center, scaled by pdfe (which goes 0 to 1 for equator to pole)
+    y = (height / 2) - pdfe * (height / 2) * 0.87  # 0.87 accounts for Robinson not reaching full height
+
     return x, y
 
 
@@ -355,7 +405,7 @@ def generate_map_pin(entry):
     x, y = coords_to_svg(lat, lon)
 
     return f'''    <a href="#{entry['id']}" class="pin-link">
-      <circle cx="{x:.1f}" cy="{y:.1f}" r="6" class="map-pin"/>
+      <circle cx="{x:.1f}" cy="{y:.1f}" r="18" class="map-pin"/>
       <title>{entry['location']}</title>
     </a>'''
 
@@ -478,6 +528,18 @@ def generate_travel_html(map_svg, entries):
         color: rgb(109, 109, 109);
         margin-bottom: 0.5em;
       }}
+
+      .map-attribution {{
+        text-align: right;
+        font-size: 0.7em;
+        color: rgb(160, 160, 160);
+        margin-top: 0.3em;
+        margin-bottom: 0;
+      }}
+
+      .map-attribution a {{
+        color: rgb(160, 160, 160);
+      }}
     </style>
 </head>
 
@@ -492,6 +554,7 @@ def generate_travel_html(map_svg, entries):
 
     <div class="map-container">
       {map_svg}
+      <p class="map-attribution">map: <a href="https://commons.wikimedia.org/wiki/File:BlankMap-World.svg">Wikimedia Commons</a></p>
     </div>
 
     <div class="entries">

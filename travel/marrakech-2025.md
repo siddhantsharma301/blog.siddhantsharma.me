@@ -2,7 +2,7 @@
 title: "Saharan ATMs"
 date: 2025-05-18
 location: "Zagora, Morocco"
-coords: [30.32429, 5.83897]
+coords: [30.32429, -5.83897]
 id: zagora
 ---
 
