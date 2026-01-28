@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="travel lore - sid sharma's blog" />
+
+    <title>travel lore</title>
+
+    <link rel="icon" type="image/svg+xml" href="/images/favicon.svg">
+
+    <link rel="stylesheet" href="../styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora&family=Space+Mono&display=swap" rel="stylesheet">
+
+    <style>
+      /* Travel-specific styles */
+      .map-container {
+        width: 100%;
+        max-width: 700px;
+        margin: 1.5em auto;
+      }
+
+      .map-container img {
+        width: 100%;
+        display: block;
+      }
+
+      .travel-entry {
+        margin: 3em 0;
+        padding-top: 1.5em;
+        border-top: 1px solid rgb(230, 230, 230);
+        scroll-margin-top: 2em;
+      }
+
+      .travel-entry:first-of-type {
+        border-top: none;
+      }
+
+      .entry-title {
+        font-style: normal;
+        font-size: 1.3em;
+        margin-bottom: 0.3em;
+      }
+
+      .entry-meta {
+        color: rgb(109, 109, 109);
+        font-style: italic;
+        margin-bottom: 1em;
+      }
+
+      .entry-location::after {
+        content: " · ";
+      }
+
+      .map-intro {
+        text-align: center;
+        color: rgb(109, 109, 109);
+        margin-bottom: 0.5em;
+      }
+    </style>
+</head>
+
+<body>
+    <div id="preamble">
+        <a href="/travel/">
+            <h1 class="title">travel lore</h1>
+        </a>
+        <p class="map-intro">click a pin to jump to the entry</p>
+        <hr>
+    </div>
+
+    <div class="map-container">
+      <img src="world-map.svg" alt="World Map">
+    </div>
+
+    <div class="entries">
+      
+    <section id="zagora" class="travel-entry">
+      <h2 class="entry-title">Saharan ATMs</h2>
+      <div class="entry-meta">
+        <span class="entry-location">Zagora, Morocco</span>
+        <span class="entry-date">2025-05-18</span>
+      </div>
+      <p>the atm’s may or may take your debit card</p>
+    </section>
+    </div>
+
+    <footer>
+        <hr>
+        <div class="footer">
+            <span style="float: left">
+                <a href="/index.html">home</a>
+            </span>
+            sid's ramblings
+        </div>
+    </footer>
+
+</body>
+
+</html>
