@@ -6,4 +6,6 @@ coords: [30.32429, -5.83897]
 id: zagora
 ---
 
-the atm's may or may take your debit card
+the atm's may or may take your debit card.
+
+cool cultures, pretty sunsets, and sprawling souks.

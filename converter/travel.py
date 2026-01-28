@@ -42,6 +42,9 @@ def build(verbose=False):
         if entry:
             entries.append(entry)
 
+    # Sort by date, newest first
+    entries.sort(key=lambda e: e['date'], reverse=True)
+
     generate_map(entries, travel_dir / "world-map.svg")
     html = generate_html(entries)
 
