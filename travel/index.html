@@ -73,7 +73,7 @@
     </div>
 
     <div class="map-container">
-      <img src="world-map.svg" alt="World Map">
+      <object id="travel-map" type="image/svg+xml" data="world-map.svg" style="width: 100%;">World Map</object>
     </div>
 
     <div class="entries">
@@ -97,6 +97,16 @@
       <p>the atm’s may or may take your debit card.</p>
 <p>cool cultures, pretty sunsets, and sprawling souks.</p>
     </section>
+
+    <section id="split" class="travel-entry">
+      <h2 class="entry-title">Caps and Gowns and Croatia</h2>
+      <div class="entry-meta">
+        <span class="entry-location">Split, Croatia</span>
+        <span class="entry-date">2024-05-26</span>
+      </div>
+      <p>last leg of a post-college trip hits hard.</p>
+<p>scenic castles, goofy boat tours, and the boys.</p>
+    </section>
     </div>
 
     <footer>
@@ -108,6 +118,35 @@
             sid's ramblings
         </div>
     </footer>
+
+    <script>
+      // Bridge SVG pin clicks to the main document hash/scroll.
+      document.addEventListener('DOMContentLoaded', () => {
+        const obj = document.getElementById('travel-map');
+        if (!obj) return;
+        obj.addEventListener('load', () => {
+          const doc = obj.contentDocument || (obj.getSVGDocument && obj.getSVGDocument());
+          if (!doc) return;
+          doc.addEventListener('click', (e) => {
+            let node = e.target;
+            while (node && node.tagName !== 'a') {
+              node = node.parentNode;
+            }
+            if (!node) return;
+            const href = node.getAttribute('xlink:href') || node.getAttribute('href') || '';
+            if (!href.startsWith('#')) return;
+            e.preventDefault();
+            const target = document.getElementById(href.slice(1));
+            if (target) {
+              target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              history.replaceState(null, '', href);
+            } else {
+              window.location.hash = href;
+            }
+          });
+        });
+      });
+    </script>
 
 </body>
 

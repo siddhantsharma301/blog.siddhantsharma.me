@@ -209,7 +209,7 @@ def generate_html(entries):
     </div>
 
     <div class="map-container">
-      <img src="world-map.svg" alt="World Map">
+      <object id="travel-map" type="image/svg+xml" data="world-map.svg" style="width: 100%;">World Map</object>
     </div>
 
     <div class="entries">
@@ -225,6 +225,35 @@ def generate_html(entries):
             sid's ramblings
         </div>
     </footer>
+
+    <script>
+      // Bridge SVG pin clicks to the main document hash/scroll.
+      document.addEventListener('DOMContentLoaded', () => {{
+        const obj = document.getElementById('travel-map');
+        if (!obj) return;
+        obj.addEventListener('load', () => {{
+          const doc = obj.contentDocument || (obj.getSVGDocument && obj.getSVGDocument());
+          if (!doc) return;
+          doc.addEventListener('click', (e) => {{
+            let node = e.target;
+            while (node && node.tagName !== 'a') {{
+              node = node.parentNode;
+            }}
+            if (!node) return;
+            const href = node.getAttribute('xlink:href') || node.getAttribute('href') || '';
+            if (!href.startsWith('#')) return;
+            e.preventDefault();
+            const target = document.getElementById(href.slice(1));
+            if (target) {{
+              target.scrollIntoView({{ behavior: 'smooth', block: 'start' }});
+              history.replaceState(null, '', href);
+            }} else {{
+              window.location.hash = href;
+            }}
+          }});
+        }});
+      }});
+    </script>
 
 </body>
 
